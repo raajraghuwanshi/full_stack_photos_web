@@ -2,9 +2,10 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Home, Plus, Search, X } from "lucide-react";
+import { CircleUser, Plus, Search, X } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import NavbarSearch from "./SearchPage";
+import { useLogout, useUserDetails } from "../../hooks/useAuth";
 
 export default function Navbar() {
   const router = useRouter();
@@ -17,17 +18,12 @@ export default function Navbar() {
   const searchRef = useRef(null);
   const inputRef = useRef(null);
 
-  const [token, setToken] = useState(null);
-
-  useEffect(() => {
-    const storedToken = localStorage.getItem("token");
-    setToken(storedToken);
-  }, []);
+  const { data } = useUserDetails();
+  const {mutate:logOut} = useLogout()
+  const user = data?.data?.user || null;
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    setToken(null);
-    router.push("/login");
+    logOut();
   };
 
   useEffect(() => {
@@ -58,14 +54,16 @@ export default function Navbar() {
     setMobileSearch(false);
     setSearch("");
   };
+
   return (
     <>
+      {/* NAVBAR */}
       <nav className="sticky top-0 z-50 bg-white border-b shadow-sm">
         <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
 
           {/* Logo */}
           <Link href="/" className="text-xl font-bold">
-            SnapBoard
+            Photobooth
           </Link>
 
           {/* Desktop Search */}
@@ -73,62 +71,65 @@ export default function Navbar() {
             <NavbarSearch />
           </div>
 
-          {/* Right Icons */}
-          <div className="flex items-center gap-3">
+          {/* Right Side */}
+          <div className="flex items-center gap-2 md:gap-3">
 
             {/* Mobile Search */}
             <button
               onClick={openSearch}
-              className="p-2 rounded-full hover:bg-gray-100 md:hidden"
+              aria-label="Search"
+              className="p-2 md:p-2.5 rounded-full hover:bg-gray-100 md:hidden"
             >
               <Search size={22} />
             </button>
 
-            {/* Home */}
-            <Link
-              href="/"
-              className="hidden md:block p-2 rounded-full hover:bg-gray-100"
-            >
-              <Home size={22} />
-            </Link>
-
-            {/* Create */}
-            {token && (
+            {/* Desktop Add Button */}
+            {user && (
               <Link
                 href="/createpost"
-                className="hidden md:block p-2 rounded-full hover:bg-gray-100"
+                className="hidden md:flex p-2 md:p-2.5 rounded-full hover:bg-gray-100"
               >
                 <Plus size={22} />
               </Link>
             )}
 
-            {/* Profile */}
+            {/* Profile / Login */}
             <div className="relative" ref={dropdownRef}>
-              <button
-                onClick={() => setOpen(!open)}
-                className="bg-gray-200 px-4 py-2 rounded-full text-sm hover:bg-gray-300"
-              >
-                Profile
-              </button>
-
-              {open && (
-                <div className="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-xl border overflow-hidden">
-
-                  <Link
-                    href="/profile"
-                    className="block px-4 py-3 text-sm hover:bg-gray-100"
-                  >
-                    View Profile
-                  </Link>
-
+              {user ? (
+                <>
                   <button
-                    onClick={handleLogout}
-                    className="w-full text-left px-4 py-3 text-sm hover:bg-gray-100 text-red-500"
+                    onClick={() => setOpen(!open)}
+                    aria-label="User Menu"
+                    className="p-2 rounded-full hover:bg-gray-100"
                   >
-                    Logout
+                    <CircleUser size={26} />
                   </button>
 
-                </div>
+                  {open && (
+                    <div className="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-xl border overflow-hidden">
+                      <Link
+                        href="/profile"
+                        className="block px-4 py-3 text-sm hover:bg-gray-100"
+                      >
+                        View Profile
+                      </Link>
+
+                      <button
+                        onClick={handleLogout}
+                        className="w-full text-left px-4 py-3 text-sm hover:bg-gray-100 text-red-500"
+                      >
+                        Logout
+                      </button>
+                    </div>
+                  )}
+                </>
+              ) : (
+                <Link
+                  href="/login"
+                  className="px-3 py-1.5 text-sm font-medium rounded-full bg-black text-white"
+                >
+                  Login
+                </Link>
               )}
             </div>
 
@@ -136,18 +137,17 @@ export default function Navbar() {
         </div>
       </nav>
 
-      {/* Mobile Search Overlay */}
+      {/* 📱 MOBILE SEARCH OVERLAY */}
       {mobileSearch && (
-        <div className="fixed inset-0 bg-black/30 z-50 flex items-start pt-6 px-4 animate-fade">
+        <div className="fixed inset-0 bg-black/30 z-50 flex items-start pt-6 px-4">
 
           <div
             ref={searchRef}
             className="bg-white w-full rounded-full shadow-md flex items-center px-4 py-3 gap-3"
           >
-
             <Search size={20} className="text-gray-500" />
 
-            <form onSubmit={handleSearch} className="flex-1 mx-2">
+            <form onSubmit={handleSearch} className="flex-1">
               <input
                 ref={inputRef}
                 enterKeyHint="search"
@@ -162,9 +162,18 @@ export default function Navbar() {
             <button onClick={() => setMobileSearch(false)}>
               <X size={20} />
             </button>
-
           </div>
         </div>
+      )}
+
+      {/* ➕ FLOATING ADD BUTTON (MOBILE ONLY) */}
+      {user && (
+        <Link
+          href="/createpost"
+          className="fixed bottom-5 right-5 z-50 bg-black text-white p-4 rounded-full shadow-lg md:hidden"
+        >
+          <Plus size={24} />
+        </Link>
       )}
     </>
   );

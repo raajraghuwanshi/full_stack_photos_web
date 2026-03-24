@@ -27,7 +27,6 @@ export const usePost = (id) => {
     queryKey: ["post", id],
     queryFn: async () => {
       const data = await getPostById(id);
-      console.log("Fetched post data in usePost hook:", data); // Debug log
       return data;
     },
     enabled: !!id,
@@ -39,7 +38,6 @@ export const useRelatedPosts = (id) =>{
     queryKey: ["relatedPosts", id],
     queryFn: async () => {
       const data = await getReletatedPosts(id);
-      console.log("Fetched related posts data in useRelatedPosts hook:", data);
       return data;
     },
     enabled: !!id,
@@ -65,6 +63,7 @@ export const useSavePost = () => {
     onSuccess: (_, postId) => {
       queryClient.invalidateQueries({ queryKey: ["post", postId] });
       queryClient.invalidateQueries({ queryKey: ["posts"] });
+      queryClient.invalidateQueries({ queryKey: ["userDetails"] });
     }
   });
 };

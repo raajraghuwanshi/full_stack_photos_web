@@ -1,9 +1,11 @@
 "use client";
 
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { getUserdetails, loginUser,registerUser } from "../apis/auth/authApi";
+import { getUserdetails, loginUser, logoutUser, registerUser } from "../apis/auth/authApi";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
+import { useDispatch } from "react-redux";
+import { useQueryClient } from "@tanstack/react-query";
 
 export const useRegister = () => {
   const router = useRouter();
@@ -21,30 +23,58 @@ export const useRegister = () => {
   });
 };
 
+
+
 export const useLogin = () => {
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: loginUser,
-    onSuccess: (data) => {
-      localStorage.setItem("token", data.token);
+
+    onSuccess: async () => {
       toast.success("Login successful 🎉");
-      router.push("/");
+
+      try {
+        // Fetch and cache user data
+        await queryClient.fetchQuery({
+          queryKey: ["userDetails"],
+          queryFn: getUserdetails,
+        });
+
+        router.push("/");
+      } catch (err) {
+        toast.error("Failed to load user details");
+      }
     },
+
     onError: (error) => {
       toast.error(error.response?.data?.message || "Login failed");
     },
   });
 };
 
-export const useUserDetails = ()=>{
+export const useUserDetails = () => {
   return useQuery({
-    queryKey:["userDetails"],
-    queryFn:getUserdetails,
-    onError:(error)=>{
+    queryKey: ["userDetails"],
+    queryFn: getUserdetails,
+    onError: (error) => {
       toast.error(error.response?.data?.message || "Failed to fetch user details");
     }
 
   })
 }
 
+export const useLogout = ()=>{
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationKey : ["logout"],
+    mutationFn: logoutUser,
+    onSuccess: (data)=>{
+      toast.success("Logged out successfully");
+      queryClient.removeQueries({ queryKey: ["userDetails"] });
+    }
+
+  })
+}
+  

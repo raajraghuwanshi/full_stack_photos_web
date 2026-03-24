@@ -2,14 +2,19 @@
 
 import { useParams } from "next/navigation";
 import { usePost, useRelatedPosts } from "../../../hooks/usePost";
-import DetailsPage from "../../../components/ui/DetailsPage";
+import dynamic from "next/dynamic";
+// import DetailsPage from "../../../components/ui/DetailsPage";
+
+const DetailsPage = dynamic(() => import("../../../components/ui/DetailsPage"), {
+  ssr: false,
+});
+
 
 export default function SinglePostPage() {
   const { id } = useParams();
   const { data:post, isLoading } = usePost(id);
   const {data:relatedPosts, isLoading:relatedPostsLoading} = useRelatedPosts(id);
-  console.log("Post data in SinglePostPage:", post); // Debug log
-  console.log("Related posts data in SinglePostPage:", relatedPosts); // Debug log
+
 
   if (isLoading || relatedPostsLoading) {
     return (

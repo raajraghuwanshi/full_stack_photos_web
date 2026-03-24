@@ -5,7 +5,7 @@ import { useLogin } from "../../hooks/useAuth";
 import Link from "next/link";
 
 export default function LoginPage() {
-  const { mutate, isPending } = useLogin();
+  const { mutate, isPending, } = useLogin();
 
   const [form, setForm] = useState({
     email: "",

@@ -1,16 +1,6 @@
 "use client";
 
-import Masonry from "react-masonry-css";
 import PostCard from "./PostCard";
-
-const breakpointColumnsObj = {
-  default: 4,
-  1536: 4,
-  1280: 3,
-  1024: 3,
-  768: 2,
-  500: 1,
-};
 
 export default function MasonryGrid({ posts }) {
   if (!posts || posts.length === 0) {
@@ -18,14 +8,12 @@ export default function MasonryGrid({ posts }) {
   }
 
   return (
-    <Masonry
-      breakpointCols={breakpointColumnsObj}
-      className="flex w-full gap-4"
-      columnClassName="flex flex-col gap-4"
-    >
+    <div className="columns-1 sm:columns-2 md:columns-3 lg:columns-4 gap-4">
       {posts.map((post) => (
-        <PostCard key={post._id} post={post} />
+        <div key={post._id} className="mb-4 break-inside-avoid">
+          <PostCard post={post} />
+        </div>
       ))}
-    </Masonry>
+    </div>
   );
 }

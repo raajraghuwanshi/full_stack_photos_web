@@ -1,6 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  /* config options here */
+  compress: true,
+  images: {
+    formats: ['image/avif', 'image/webp'],
+    domains: ["ik.imagekit.io"],
+  },
 };
 
 export default nextConfig;

@@ -25,7 +25,7 @@ export default function NavbarSearch() {
     <input
       type="text"
       placeholder="Search posts..."
-      className="w-full bg-gray-100 rounded-full px-4 py-2 focus:outline-gray-300 "
+      className="w-full bg-gray-100 border border-gray-400 rounded-full px-4 py-2 focus:outline-gray-600 "
       value={search}
       onChange={(e) => setSearch(e.target.value)}
       onKeyDown={handleSearch}

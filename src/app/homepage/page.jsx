@@ -1,7 +1,12 @@
 "use client";
 
 import { usePosts } from "../../hooks/usePost";
-import MasonryGrid from "../../components/ui/MasonryGrid";
+// import MasonryGrid from "../../components/ui/MasonryGrid";
+import dynamic from "next/dynamic";
+
+const MasonryGrid = dynamic(() => import("../../components/ui/MasonryGrid"), {
+  ssr: false,
+});
 
 
 export default function HomePage() {
