@@ -18,6 +18,10 @@
   export const metadata = {
     title: "Photobooth",
     description: "it is created to share your moments with the world",
+    verification: {
+      google: "google1d93dd9f67f80839.html"
+  },
+ 
   };
 
   export default function RootLayout({ children }) {
