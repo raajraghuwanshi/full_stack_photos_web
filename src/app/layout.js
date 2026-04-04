@@ -4,8 +4,6 @@
   import QueryProvider  from "../components/hoc/QueryPorived";
   import { Toaster } from "react-hot-toast";
   import Navbar from "../components/ui/Navbar";
-  import { Provider } from "react-redux";
-  import { store } from "../lib/store/Store";
 
   const geistSans = Geist({
     variable: "--font-geist-sans",
