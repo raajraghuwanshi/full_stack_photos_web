@@ -8,12 +8,28 @@ import { useQueryClient } from "@tanstack/react-query";
 
 export const useRegister = () => {
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: registerUser,
-    onSuccess: (data) => {
+    onSuccess: async () => {
       toast.success("Account created successfully 🚀");
-      router.push("/");
+
+      const maxAge = 7 * 24 * 60 * 60; // 7 days in seconds
+      document.cookie = `isloggedin=true; path=/; max-age=${maxAge}; Secure; SameSite=Lax`;
+
+      try {
+        // Fetch and cache user data
+        await queryClient.fetchQuery({
+          queryKey: ["userDetails"],
+          queryFn: getUserdetails,
+        });
+
+        router.push("/");
+      } catch (err) {
+        toast.error("Failed to load user details");
+      }
+
     },
     onError: (error) => {
       toast.error(error.response?.data?.message || "Registration failed");
@@ -32,6 +48,9 @@ export const useLogin = () => {
 
     onSuccess: async () => {
       toast.success("Login successful 🎉");
+
+      const maxAge = 7 * 24 * 60 * 60; // 7 days in seconds
+      document.cookie = `isloggedin=true; path=/; max-age=${maxAge}; Secure; SameSite=Lax`;
 
       try {
         // Fetch and cache user data
@@ -63,16 +82,21 @@ export const useUserDetails = () => {
   })
 }
 
-export const useLogout = ()=>{
+export const useLogout = () => {
+  const router = useRouter()
   const queryClient = useQueryClient();
   return useMutation({
-    mutationKey : ["logout"],
+    mutationKey: ["logout"],
     mutationFn: logoutUser,
-    onSuccess: (data)=>{
+    onSuccess: () => {
       toast.success("Logged out successfully");
+
+      document.cookie = "isloggedin=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax";
+
       queryClient.removeQueries({ queryKey: ["userDetails"] });
+
+      router.push("/login");
     }
 
   })
 }
-  

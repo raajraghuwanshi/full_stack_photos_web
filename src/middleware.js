@@ -4,9 +4,8 @@ export function middleware(request) {
   const { pathname } = request.nextUrl;
 
   // Example: check auth using cookie (adjust based on your setup)
-  const token = request.cookies.get('token')?.value;
-
-  const isLoggedIn = !!token;
+ const token = request.cookies.get('isloggedin')?.value;
+ const isLoggedIn = token === 'true';
 
   // Routes
   const authPages = ['/login', '/signup'];
