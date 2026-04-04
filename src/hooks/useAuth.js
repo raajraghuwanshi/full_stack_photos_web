@@ -12,7 +12,6 @@ export const useRegister = () => {
   return useMutation({
     mutationFn: registerUser,
     onSuccess: (data) => {
-      localStorage.setItem("token", data.token);
       toast.success("Account created successfully 🚀");
       router.push("/");
     },
