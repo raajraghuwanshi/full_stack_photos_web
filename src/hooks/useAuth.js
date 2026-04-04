@@ -4,7 +4,6 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { getUserdetails, loginUser, logoutUser, registerUser } from "../apis/auth/authApi";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
-import { useDispatch } from "react-redux";
 import { useQueryClient } from "@tanstack/react-query";
 
 export const useRegister = () => {
