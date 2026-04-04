@@ -3,7 +3,7 @@
 import axios from "axios";
 
 const axiosInstance = axios.create({
-  baseURL: " https://full-stack-backend-4ag5.onrender.com/api", // change if needed
+  baseURL: process.env.API_BASE_URL, // change if needed
   withCredentials: true,
 });
 
