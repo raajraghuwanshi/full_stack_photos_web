@@ -9,7 +9,7 @@ const PostDetailPage = ({ post }) => {
     const { mutate: likeMutate } = useLikePost()
     const { mutate: saveMutate } = useSavePost()
     const { data } = useUserDetails()
-    const [isliked ,setIsLiked] = useState(post?.likes?.includes(data?.data?.user?._id) || false);
+    const [isLiked ,setIsLiked] = useState(post?.likes?.includes(data?.data?.user?._id) || false);
 
 
     const userid = data?.data?.user?._id;
@@ -87,7 +87,7 @@ const PostDetailPage = ({ post }) => {
         }
     };
 
-    const isLiked = post?.likes?.includes(userid);
+    // const isLiked = post?.likes?.includes(userid);
    
     // const isSaved = savedPosts.some(
     //     item => item.postId._id.toString() === post._id.toString()
