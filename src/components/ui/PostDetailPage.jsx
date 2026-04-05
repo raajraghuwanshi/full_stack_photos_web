@@ -2,24 +2,48 @@ import { Bookmark, Heart, Share2, Download } from 'lucide-react'
 import { useLikePost, useSavePost } from '../../hooks/usePost'
 import { useUserDetails } from '../../hooks/useAuth';
 import Image from 'next/image';
+import { useEffect, useState } from 'react';
 
 const PostDetailPage = ({ post }) => {
 
     const { mutate: likeMutate } = useLikePost()
     const { mutate: saveMutate } = useSavePost()
     const { data } = useUserDetails()
+    const [isliked ,setIsLiked] = useState(post?.likes?.includes(data?.data?.user?._id) || false);
+
 
     const userid = data?.data?.user?._id;
     const savedPosts = data?.data?.savedPosts || [];
 
+     const [isSaved,setIsSaved] = useState(savedPosts.some(item => item.postId._id.toString() === post._id.toString()) || false)
+
+     useEffect(() => {
+        if (userid) {
+            setIsLiked(post?.likes?.includes(userid) || false);
+            setIsSaved(savedPosts.some(item => item.postId?._id?.toString() === post._id?.toString()) || false);
+        }
+    }, [userid, post, savedPosts]);
+
     const handleLike = () => {
         if (!userid) return;
-        likeMutate(post._id)
+
+        setIsLiked(prev => !prev);
+        likeMutate(post._id,{
+            onError:()=>{
+                setIsLiked(prev => !prev)
+            }
+        }
+        )
     }
 
     const handleSave = () => {
         if (!userid) return;
-        saveMutate(post._id)
+        setIsSaved(prev => !prev);
+        saveMutate(post._id,{
+            onError:()=>{
+                setIsSaved(prev => !prev)
+            }
+        })
     }
 
     // ✅ Share Function
@@ -64,9 +88,10 @@ const PostDetailPage = ({ post }) => {
     };
 
     const isLiked = post?.likes?.includes(userid);
-    const isSaved = savedPosts.some(
-        item => item.postId._id.toString() === post._id.toString()
-    );
+   
+    // const isSaved = savedPosts.some(
+    //     item => item.postId._id.toString() === post._id.toString()
+    // );
 
     return (
         <div className="bg-white rounded-2xl shadow-md max-w-5xl w-full overflow-hidden">
