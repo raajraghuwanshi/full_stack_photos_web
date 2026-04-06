@@ -3,21 +3,22 @@ import { useLikePost, useSavePost } from '../../hooks/usePost'
 import { useUserDetails } from '../../hooks/useAuth';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
 
 const PostDetailPage = ({ post }) => {
 
     const { mutate: likeMutate } = useLikePost()
     const { mutate: saveMutate } = useSavePost()
     const { data } = useUserDetails()
-    const [isLiked ,setIsLiked] = useState(post?.likes?.includes(data?.data?.user?._id) || false);
+    const [isLiked, setIsLiked] = useState(post?.likes?.includes(data?.data?.user?._id) || false);
 
 
     const userid = data?.data?.user?._id;
     const savedPosts = data?.data?.savedPosts || [];
 
-     const [isSaved,setIsSaved] = useState(savedPosts.some(item => item.postId._id.toString() === post._id.toString()) || false)
+    const [isSaved, setIsSaved] = useState(savedPosts.some(item => item.postId._id.toString() === post._id.toString()) || false)
 
-     useEffect(() => {
+    useEffect(() => {
         if (userid) {
             setIsLiked(post?.likes?.includes(userid) || false);
             setIsSaved(savedPosts.some(item => item.postId?._id?.toString() === post._id?.toString()) || false);
@@ -25,11 +26,14 @@ const PostDetailPage = ({ post }) => {
     }, [userid, post, savedPosts]);
 
     const handleLike = () => {
-        if (!userid) return;
+        if (!userid) {
+            toast.error('please login first ')
+            return
+        };
 
         setIsLiked(prev => !prev);
-        likeMutate(post._id,{
-            onError:()=>{
+        likeMutate(post._id, {
+            onError: () => {
                 setIsLiked(prev => !prev)
             }
         }
@@ -37,10 +41,13 @@ const PostDetailPage = ({ post }) => {
     }
 
     const handleSave = () => {
-        if (!userid) return;
+        if (!userid) {
+            toast.error('please login first ')
+            return
+        };
         setIsSaved(prev => !prev);
-        saveMutate(post._id,{
-            onError:()=>{
+        saveMutate(post._id, {
+            onError: () => {
                 setIsSaved(prev => !prev)
             }
         })
@@ -88,30 +95,47 @@ const PostDetailPage = ({ post }) => {
     };
 
     // const isLiked = post?.likes?.includes(userid);
-   
+
     // const isSaved = savedPosts.some(
     //     item => item.postId._id.toString() === post._id.toString()
     // );
 
     return (
         <div className="bg-white rounded-2xl shadow-md max-w-5xl w-full overflow-hidden">
-            <Image
-                width={1500}
-                height={1500}
-                src={post.imageUrl}
-                alt="post"
-                priority
-                className="w-full object-contain max-h-[80vh] bg-black"
-            />
+
+            <div className="relative flex justify-center bg-white/10 backdrop-blur-md overflow-hidden">
+
+                {/* 🔥 Background (blurred version of same image) */}
+                <Image
+                    src={post.imageUrl}
+                    alt="bg"
+                    fill
+                    priority
+                    className="object-cover blur-3xl scale-110"
+                />
+
+                {/* Main Image */}
+                <div className="relative z-10">
+                    <Image
+                        width={1500}
+                        height={1500}
+                        src={post.imageUrl}
+                        alt="post"
+                        priority
+                        className="rounded-xl shadow-2xl max-h-[80vh] w-auto object-contain"
+                    />
+                </div>
+
+            </div>
 
             <div className="p-6 flex flex-col md:flex-row justify-between">
                 <div>
                     {post.caption && (
-                        <p className="text-lg text-gray-800">{post.caption}</p>
+                        <p className="text-lg font-body font-bold text-gray-800">{post.caption}</p>
                     )}
 
                     {post.createdBy && (
-                        <p className="mt-2 text-sm text-gray-500">
+                        <p className="mt-2 text-sm font-body text-gray-500">
                             by {post.createdBy.name}
                         </p>
                     )}

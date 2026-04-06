@@ -1,12 +1,14 @@
 "use client";
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getAllPosts,createPost, getPostById, getReletatedPosts, likePost, savePost } from "../apis/post/postApi"; 
+import { getAllPosts, createPost, getPostById, getReletatedPosts, likePost, savePost } from "../apis/post/postApi";
 
 export const usePosts = () => {
   return useQuery({
     queryKey: ["posts"],
     queryFn: getAllPosts,
+    staleTime: 1000 * 60 * 5,
+    refetchOnWindowFocus: false,
   });
 };
 
@@ -30,10 +32,11 @@ export const usePost = (id) => {
       return data;
     },
     enabled: !!id,
+    staleTime: 1000 * 60 * 5,
   });
 };
 
-export const useRelatedPosts = (id) =>{
+export const useRelatedPosts = (id) => {
   return useQuery({
     queryKey: ["relatedPosts", id],
     queryFn: async () => {
@@ -44,14 +47,14 @@ export const useRelatedPosts = (id) =>{
   });
 }
 
-export const useLikePost = () =>{
+export const useLikePost = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn:likePost,
-      onSuccess:()=>{
-        queryClient.invalidateQueries({queryKey:["post"]})
-        queryClient.invalidateQueries({queryKey:["posts"]})
-      }
+    mutationFn: likePost,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["post"] })
+      queryClient.invalidateQueries({ queryKey: ["posts"] })
+    }
   })
 }
 

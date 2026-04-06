@@ -1,14 +1,16 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { CircleUser, Plus, Search, X } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import NavbarSearch from "./SearchPage";
 import { useLogout, useUserDetails } from "../../hooks/useAuth";
+import Image from "next/image";
 
 export default function Navbar() {
   const router = useRouter();
+  const pathname = usePathname()
 
   const [open, setOpen] = useState(false);
   const [mobileSearch, setMobileSearch] = useState(false);
@@ -19,7 +21,7 @@ export default function Navbar() {
   const inputRef = useRef(null);
 
   const { data } = useUserDetails();
-  const {mutate:logOut} = useLogout()
+  const { mutate: logOut } = useLogout()
   const user = data?.data?.user || null;
 
   const handleLogout = () => {
@@ -62,7 +64,7 @@ export default function Navbar() {
         <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
 
           {/* Logo */}
-          <Link href="/" className="text-xl font-bold">
+          <Link href="/" className="text-xl font-heading font-bold ">
             Photobooth
           </Link>
 
@@ -102,7 +104,13 @@ export default function Navbar() {
                     aria-label="User Menu"
                     className="p-2 rounded-full hover:bg-gray-100"
                   >
-                    <CircleUser size={26} />
+                    <Image
+                      width={100}
+                      height={100}
+                      alt="ProfilePhoto"
+                      src={user.profileImage}
+                      className="w-8 h-8 rounded-full object-cover bg-gray-100"
+                    />
                   </button>
 
                   {open && (
@@ -167,7 +175,7 @@ export default function Navbar() {
       )}
 
       {/* ➕ FLOATING ADD BUTTON (MOBILE ONLY) */}
-      {user && (
+      {user && pathname !== "/createpost" && (
         <Link
           href="/createpost"
           className="fixed bottom-5 right-5 z-50 bg-black text-white p-4 rounded-full shadow-lg md:hidden"
