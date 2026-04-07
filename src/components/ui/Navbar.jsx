@@ -161,7 +161,7 @@ export default function Navbar() {
 
       {/* 📱 MOBILE SEARCH OVERLAY */}
       {mobileSearch && (
-        <div className="fixed inset-0 bg-white z-[60] p-4 flex flex-col animate-in slide-in-from-top duration-200">
+        <div className="fixed inset-0 bg-white z-60 p-4 flex flex-col animate-in slide-in-from-top duration-200">
           <div ref={searchRef} className="flex items-center gap-3">
             <div className="flex-1 bg-gray-100 rounded-xl flex items-center px-4 py-2.5 gap-3">
               <Search size={18} className="text-gray-400" />

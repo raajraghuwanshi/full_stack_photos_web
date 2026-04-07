@@ -39,32 +39,27 @@ export const useRegister = () => {
 
 
 
+// hooks/useAuth.js
 export const useLogin = () => {
   const router = useRouter();
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: loginUser,
-
     onSuccess: async () => {
       toast.success("Login successful 🎉");
 
-      const maxAge = 7 * 24 * 60 * 60; // 7 days in seconds
-      document.cookie = `isloggedin=true; path=/; max-age=${maxAge}; Secure; SameSite=Lax`;
+      // 1. Set the helper cookie for the middleware
+      const maxAge = 7 * 24 * 60 * 60;
+      document.cookie = `isloggedin=true; path=/; max-age=${maxAge}; Secure; SameSite=None`;
 
-      try {
-        // Fetch and cache user data
-         await queryClient.fetchQuery({
-          queryKey: ["user"],
-          queryFn: () => getUserdetails()
-        });
+      // 2. Clear all old "401" errors from memory
+      queryClient.clear();
 
-        router.push("/");
-      } catch (err) {
-        toast.error("Failed to load user details");
-      }
+      // 3. Instead of fetchQuery, just redirect. 
+      // The Navbar/Profile will automatically trigger useUserDetails when the page loads.
+      router.push("/");
     },
-
     onError: (error) => {
       toast.error(error.response?.data?.message || "Login failed");
     },
