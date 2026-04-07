@@ -29,7 +29,7 @@ const poppins = Poppins({
 });
 
 export const metadata = {
-  title: "Photobooth",
+  title: "PhotoGallery",
   description: "it is created to share your moments with the world",
   verification: {
     google: "google1d93dd9f67f80839.html"

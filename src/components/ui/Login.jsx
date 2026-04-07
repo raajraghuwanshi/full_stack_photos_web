@@ -1,0 +1,67 @@
+"use client";
+
+import { useState } from "react";
+import { useLogin } from "@/hooks/useAuth";
+import Link from "next/link";
+
+export default function LoginPage() {
+  const { mutate, isPending, } = useLogin();
+
+  const [form, setForm] = useState({
+    email: "",
+    password: "",
+  });
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    mutate(form);
+  };
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+      <form
+        onSubmit={handleSubmit}
+        className="bg-white p-8 rounded-xl shadow-md w-96 space-y-4"
+      >
+        <h2 className="text-2xl font-bold text-center">Welcome Back</h2>
+
+        <input
+          type="email"
+          placeholder="Email"
+          className="w-full border p-2 rounded-md"
+          required
+          value={form.email}
+          onChange={(e) =>
+            setForm({ ...form, email: e.target.value })
+          }
+        />
+
+        <input
+          type="password"
+          placeholder="Password"
+          className="w-full border p-2 rounded-md"
+          required
+          value={form.password}
+          onChange={(e) =>
+            setForm({ ...form, password: e.target.value })
+          }
+        />
+
+        <button
+          type="submit"
+          disabled={isPending}
+          className="w-full bg-black text-white py-2 rounded-md hover:opacity-80"
+        >
+          {isPending ? "Logging in..." : "Login"}
+        </button>
+
+        <p className="text-center text-sm">
+          Don’t have an account?{" "}
+          <Link href="/register" className="text-blue-600">
+            Register
+          </Link>
+        </p>
+      </form>
+    </div>
+  );
+}

@@ -21,8 +21,8 @@ export const useRegister = () => {
       try {
         // Fetch and cache user data
         await queryClient.fetchQuery({
-          queryKey: ["userDetails"],
-          queryFn: getUserdetails,
+          queryKey: ["user"],
+          queryFn: () => getUserdetails()
         });
 
         router.push("/");
@@ -54,9 +54,9 @@ export const useLogin = () => {
 
       try {
         // Fetch and cache user data
-        await queryClient.fetchQuery({
-          queryKey: ["userDetails"],
-          queryFn: getUserdetails,
+         await queryClient.fetchQuery({
+          queryKey: ["user"],
+          queryFn: () => getUserdetails()
         });
 
         router.push("/");
@@ -71,16 +71,19 @@ export const useLogin = () => {
   });
 };
 
-export const useUserDetails = () => {
-  return useQuery({
-    queryKey: ["userDetails"],
-    queryFn: getUserdetails,
-    onError: (error) => {
-      toast.error(error.response?.data?.message || "Failed to fetch user details");
-    }
+export const useUserDetails = (flags = { saved: false, created: false }) => {
+  // Create a string for the URL: e.g., "?saved=true&created=true"
+  const queryParams = new URLSearchParams();
+  if (flags.saved) queryParams.append("saved", "true");
+  if (flags.created) queryParams.append("created", "true");
+  
+  const queryString = queryParams.toString() ? `?${queryParams.toString()}` : "";
 
-  })
-}
+  return useQuery({
+    queryKey: ["user", flags], // React Query caches different versions separately
+    queryFn: () => getUserdetails(queryString),
+  });
+};
 
 export const useLogout = () => {
   const router = useRouter()

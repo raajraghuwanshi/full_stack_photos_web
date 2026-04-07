@@ -1,8 +1,10 @@
 import axiosInstance from "../../lib/AxiosInstance";
-
-export const getAllPosts = async () => {
-  const res = await axiosInstance.get("/posts");
-  return res.data.data;
+export const getAllPosts = async ({ pageParam = 1 }) => {
+  // We pass 'page' to the backend controller we just modified
+  const res = await axiosInstance.get(`/posts?page=${pageParam}&limit=10`);
+  
+  // Return the whole object so the hook can see 'nextPage'
+  return res.data; 
 };
 
 export const createPost = async (formData) => {
@@ -33,4 +35,8 @@ export const likePost = async(id)=>{
 export const  savePost = async(id)=>{
   const res = await axiosInstance.post(`/posts/save/${id}`)
   return res.data.data;
+}
+
+export const deletePost = async(id)=>{
+  const res = await axiosInstance.delete(`/posts/${id}`)
 }

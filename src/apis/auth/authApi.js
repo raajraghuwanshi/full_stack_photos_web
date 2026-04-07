@@ -10,8 +10,9 @@ export const loginUser = async (data) => {
   return res.data;
 };
 
-export const getUserdetails = async () => {
-  const res = await axiosInstance.get("/auth/me");
+export const getUserdetails = async (params = "") => {
+  // params will look like "?saved=true" or "?saved=true&created=true"
+  const res = await axiosInstance.get(`/auth/me${params}`);
   return res.data;
 };
 
